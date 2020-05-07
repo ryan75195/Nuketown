@@ -1,53 +1,71 @@
 import cv2
 import numpy as np
-import pygame
 
-def nothing(x):
-    pass
-
-
-cv2.namedWindow("Tracking")
-cv2.createTrackbar("LH", "Tracking", 0, 255, nothing)
-cv2.createTrackbar("LS", "Tracking", 0, 255, nothing)
-cv2.createTrackbar("LV", "Tracking", 0, 255, nothing)
-
-cv2.createTrackbar("UH", "Tracking", 255, 255, nothing)
-cv2.createTrackbar("US", "Tracking", 255, 255, nothing)
-cv2.createTrackbar("UV", "Tracking", 255, 255, nothing)
+# import pygame
+#
+# map = cv2.imread("mapped.jpg", 0)
+# cv2.imshow("image", map)
+# cv2.waitKey(5000)
 
 
-while True:
+def formatString(obj):
+    ret = []
+    x = []
+    y = []
+    onY = False
 
-    map = cv2.imread("mapped.jpg")
-    hsv = cv2.cvtColor(map, cv2.COLOR_BGR2HSV)
-    lh = cv2.getTrackbarPos("LH", "Tracking")
-    ls = cv2.getTrackbarPos("LS", "Tracking")
-    lv = cv2.getTrackbarPos("LV", "Tracking")
+    for i in obj:
 
-    uh = cv2.getTrackbarPos("UH", "Tracking")
-    us = cv2.getTrackbarPos("US", "Tracking")
-    uv = cv2.getTrackbarPos("UV", "Tracking")
+        if i == "[":
+            onY = False
+        if i == ",":
+            onY = True
 
-    LB = np.array([lh,ls,lv])
-    UB = np.array([uh,us,uv])
-    mask = cv2.inRange(hsv, LB, UB)
+        if i.isdigit():
+            if not onY:
+                x.append(i)
+            elif onY:
+                y.append(i)
 
-    res = cv2.bitwise_and(map, map, mask=mask)
-    cv2.imshow("Image", map)
-    cv2.imshow("res", res)
+        if i == "]":
+            add = []
+            x1 = ''.join(x)
+            y1 = ''.join(y)
+            print(x1)
+            if x1 != '':
+                add.append(int(x1))
+            if y1 != '':
+                add.append(int(y1))
+            ret.append(add)
+            add = []
+            x = []
+            y = []
 
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+    return ret
 
-# class Map:
 
-    #
-    # walls = np.array((0,255,0))
-    # jumpabables = np.array((0,0,255))
-    # conditional_jumpables = np.array((255,0,255))
-    # Height_Change = np.array((0,255,255))
-    # buildings = np.array((255,0,0))
-    # heights_dependant_exits = np.array((255,255,0))
-    #
-    # lower = np.array((255,254,60))
-    # upper = np.array((255,255,100))
+coords = open("Coordinates.txt").read().splitlines()
+coordinates = {}
+objects = ["walls", "buildings", "stairs", "ujs", "djs", "exits"]
+
+for i in range(len(coords)):
+    coordinates[objects[i]] = coords[i]
+
+walls = formatString(coordinates["walls"])
+buildings = formatString(coordinates["buildings"])
+stairs = formatString(coordinates["stairs"])
+ujs = formatString(coordinates["ujs"])
+djs = formatString(coordinates["djs"])
+exits = formatString(coordinates["exits"])
+
+
+
+def solidObjects():
+    ret = []
+    for i in walls:
+        ret += [i]
+    for i in buildings:
+        ret += [i]
+
+    return [x for x in ret if x != []]
+# def createMap():
