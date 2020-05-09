@@ -2,21 +2,32 @@ import pygame
 import Map as mp
 import main as m
 import numpy as np
+import gun
 
 class player:
 
-    def Spawn(self, team):
+    def spawn(self, team):
         if team == "red":
             return [230,70,0]
         if team == "green":
             return [266,455,0]
 
+    def respawn(self, team):
+        self.health = 100
+        self.gun.reset()
+        if team == "red":
+            self.position = [230,70,0]
+        if team == "green":
+            self.position = [266,455,0]
+
     def __init__(self, name, team, gun):
         self.name = name
         self.team = team
         self.gun = gun
-        self.position = self.Spawn(self.team)
+        self.position = self.spawn(self.team)
         self.health = 100
+        self.killCount = 0
+        self.deathCount = 0
 
     def getX(self):
         return self.position[0]
@@ -27,14 +38,38 @@ class player:
     def getZ(self):
         return self.position[2]
 
+    def getPosition(self):
+        return [self.getX(),self.getY(),self.getZ()]
+
     def getWidth(self):
         return m.width
 
     def getHeight(self):
         return m.height
 
+    def getName(self):
+        return self.name
+
     def getTeam(self):
         return self.team
+
+    def getAmmo(self):
+        return self.gun.getAmmo()
+
+    def getAmmoInClip(self):
+        return self.gun.getBulletsInClip()
+
+    def getKillCount(self):
+        return self.killCount
+
+    def getHealth(self):
+        return self.health
+
+    def getDeathCount(self):
+        return self.deathCount
+
+    def damage(self, amount):
+        self.health -= amount
 
     def walk(self, direction):
         if direction == "left" and self.position[0] > m.vel and [self.position[0] - m.vel, self.position[1]] not in mp.solidObjects():
@@ -47,14 +82,14 @@ class player:
             self.position[1] += m.vel
 
     def isDead(self):
-        if health <= 0:
+        if self.health <= 0:
             return True
         else:
             return False
 
     def getDistance(self,player):
         return int(((player.getX() - self.getX())**2 + (player.getY() - self.getY())**2)**0.5)
-    #
+
     def canSee(self, player, win):
         solids = np.array(mp.solidObjects())
         m = ((player.getY() - self.getY())/(player.getX() - self.getX()))
@@ -62,10 +97,19 @@ class player:
         a = player.getX()
         visible = True
         lineCoords = []
-        for point in solids if point[1] == m*point[0] - m*a + b:
-             print("wall at {}".format(point))
-             pygame.draw.rect(win,(0,255,255), (point[0],point[1],1,1))
-             visible = False
+        for point in solids:
+            y = int(m * (point[0] - a) + b)
+            if point[1] == y and ((y <= max(self.getY(), player.getY())) and (y >= min(self.getY(), player.getY()))) and ((point[0] >= min(self.getX(), player.getX())) and (point[0] <= max(self.getX(), player.getX()))):
+                visible = False
         return visible
 
-        # def draw(self,x,y):
+    def kill(self, player, win):
+        if self.canSee(player, win):
+            pygame.draw.line(win,(0,0,255), (self.getX(), self.getY()), (player.getX(), player.getY()))
+            pygame.display.flip()
+            self.gun.shoot(player)
+
+        if player.isDead():
+            player.respawn(player.getTeam())
+            self.killCount += 1
+            player.deathCount += 1

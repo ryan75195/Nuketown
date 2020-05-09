@@ -31,7 +31,7 @@ def formatString(obj):
             add = []
             x1 = ''.join(x)
             y1 = ''.join(y)
-            print(x1)
+            # print(x1)
             if x1 != '':
                 add.append(int(x1))
             if y1 != '':
