@@ -15,6 +15,7 @@ screenHeight = 512
 width = 3.5
 height = 3.5
 vel = 1
+win = pygame.display.set_mode((screenWidth, screenHeight))
 
 bg = pygame.image.load("map.png")
 
@@ -72,13 +73,12 @@ def setupPlayers():
 
     allPlayers = np.array([])
 
-    allPlayers = np.append(allPlayers, Player.player("Player1", "red", DSR1))
-    allPlayers = np.append(allPlayers, Player.player("Player2", "green", DSR2))
+    allPlayers = np.append(allPlayers, Player.player("Player1", "red", DSR1, win, width))
+    allPlayers = np.append(allPlayers, Player.player("Player2", "green", DSR2, win, width))
     return allPlayers
 
 
 def runGame():
-    win = pygame.display.set_mode((screenWidth, screenHeight))
     pygame.display.set_caption("Nuketown")
     allPlayers = setupPlayers()
     currentPlayer = 0
@@ -87,7 +87,7 @@ def runGame():
     vertices = []
     drw(win, allPlayers, showStats, 1)
     # Player.
-
+    showGrid = False
 
 
     # pygame.time.delay(2000000)
@@ -104,15 +104,18 @@ def runGame():
         # print(AI.detectWalls(cur))
 
         # print()
-        b = Brain.graph("Nuketown-Nodes.txt")
-        b.createGraph("Nuketown-Nodes.txt", win, width, width)
-        allPlayers[currentPlayer].walkTo([230, 445], False, 5, mp.solidObjects(), win,width)
+        b = Brain.graph("Nuketown-Nodes.txt", win, width, width)
+        # b.createGraph("Nuketown-Nodes.txt", win, width, width)
+        # b.displayGrid()
+        # allPlayers[currentPlayer].walkTo([240, 400], False, 2, mp.solidObjects(), b)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
 
             keys = pygame.key.get_pressed()
 
+        if keys[pygame.K_g]:
+            showGrid = not showGrid
         if keys[pygame.K_s]:
             currentPlayer = nextPlayer(currentPlayer, allPlayers)
 
@@ -131,7 +134,11 @@ def runGame():
         if keys[pygame.K_DOWN]:
             allPlayers[currentPlayer].walk("down")
 
+        if showGrid:
+            b.displayGrid()
+
         drw(win, allPlayers, showStats, cur)
+        pygame.time.delay(20)
     pygame.quit()
 
 
