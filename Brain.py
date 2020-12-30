@@ -1,4 +1,5 @@
 import ast
+from random import random, randint
 
 import numpy as np
 import Map as mp
@@ -10,8 +11,12 @@ import main
 
 
 class graph:
-    def __init__(self, graphName):
-        self.graph = ast.literal_eval(self.loadGraph(graphName))
+    def __init__(self, filename,win, width, height):
+        self.filename = filename
+        self.win = win
+        self.width = width
+        self.height = height
+        self.graph = ast.literal_eval(self.loadGraph(filename,win, width, height))
         # print(self.pathfinding)
         # print(self.pathfinding['(230, 70)'])
         # exit(0)
@@ -23,21 +28,39 @@ class graph:
     def bfs(self, start, end):
         visited = []
 
-    def loadGraph(self,filename):
-        file = open(filename, "r")
-        dictstr = file.read()
-        print((ast.literal_eval(dictstr)['(230, 70)']))
+    def displayGrid(self):
+        # grid = self.graph
+        bg = pygame.image.load("map.png")
+        self.win.fill((0, 0, 0))
+        self.win.blit(bg, (0, 0))
+        for point in (self.graph.keys()):
+            print(ast.literal_eval(point)[0])
+            pygame.draw.rect(self.win, (255, 0, 0), (ast.literal_eval(point)[0], ast.literal_eval(point)[1], 1, 1))
+            pygame.display.update()
+
+
+    def loadGraph(self,filename,win, width, height):
+        try:
+            file = open(filename, "r")
+            dictstr = file.read()
+            # print((ast.literal_eval(dictstr)['(230, 70)']))
+        except Exception:
+            self.createGraph(filename,win, width, height)
+            file = open(filename, "r")
+            dictstr = file.read()
+            # print((ast.literal_eval(dictstr)['(230, 70)']))
+
+
         return dictstr
 
     def createGraph(self, filename,win, width, height):
-        walls = mp.solidObjects()
-        print(len(walls))
+        # print(len(walls))
         # exit(0)
         validPositions = [[]]
         position = (230, 70)
         queue = set()
         queue.add(position)
-        gridSpacing = 5
+        gridSpacing = 2
         graph = {}
         file = open(filename, "a")
         solids = np.array(mp.solidObjects())
@@ -66,54 +89,130 @@ class graph:
         return validPositions
 
     def Astar(self, Point1, Point2, win, width):
+        moveset = []
+        moveset.append(Point1)
+        last = Point1
         current = Point1
-        # end = Point2
-        moveSet = [[]]
-        # next = set()
-        # pathCost = {}
-        #
-        #
-        # while current != Point2:
-        #     current = next.pop()
 
-        blacklisted = []
-        last = []
-        PathDistances = {}
+        checked = 0
+        queue = set()
+        distances = []
+        visited = []
+        blacklist = []
+        while mp.distance(Point2, current) > 5 or Point2 == current:
+            distances = []
+            for neighbour in self.graph[f'({current[0]}, {current[1]})']:
+                if len(moveset) > 0 and neighbour != current and neighbour not in blacklist:
+                    # print(neighbour)
+                    distances.append(mp.distance(neighbour,Point2))
+                else:
+                    distances.append(9999)
 
+            closest = self.graph[f'({current[0]}, {current[1]})'][distances.index(min(distances))]
+            print(distances)
+            while closest in blacklist:
+               if all(x for x in distances if x == 9999):
+                   blacklist.append(current)
+                   current = visited[-1]
+                   print(current)
+                   visited = visited[:-1]
+                   break
+                   # current = closest
+                   # break
+               else:
+                   distances[distances.index(min(distances))] = 9999
+                   closest = self.graph[f'({current[0]}, {current[1]})'][distances.index(min(distances))]
 
-
-        # chance to dp where a table is stored with all the distences from all routes and chose a route, if val
-        # is already calculated use it if not then calculate it, shortest valued route wins.
-
-        while current != Point2:
-            print(mp.distance(current, Point2))
-            currentMoves = self.graph[f'({current[0]}, {current[1]})']
-            closest = [-999,-999]
-
-
-            for move in currentMoves:
-                if mp.distance(move,Point2) < mp.distance(closest,Point2) and move not in moveSet and move != [] and move not in blacklisted:
-                    closest = move
-                # else:
-
-            if closest == [-999,-999]:
-                blacklisted.append(current)
-                # current = last
-                rand = np.random.random_integers(0, len(currentMoves) - 1, 1)
-                closest = currentMoves[rand[0]]
-
-            moveSet.append(closest)
-            last = current
-            current = closest
+            if closest in visited and closest not in blacklist:
+                blacklist.append(current)
+                # last = current
+                current = closest
+            # pygame.time.delay(20)
 
 
+            # else:
+            visited.append(closest)
+            # current = closest
+            print(mp.distance(current,Point2))
+            print(blacklist)
+            moveset = np.append(moveset, current)
 
-            # print(1)
+            bg = pygame.image.load("map.png")
+            win.fill((0, 0, 0))
+            win.blit(bg, (0, 0))
+            pygame.draw.rect(win, (255, 0, 0), (current[0], current[1], width, width))
+            pygame.display.update()
 
-        return moveSet
+        return moveset
+
+    def getPath(self, Point1, Point2):
+            current = Point1
+            moveset = []
+            lastMove = None
+            blacklist = []
+
+            while mp.distance(Point2, current) > 5 or Point2 == current:
+                #STEP1: Check all Points around current position, store in table with position and distance from goal
+                options = []
+                distances = []
+
+                for neighbour in self.graph[f'({current[0]}, {current[1]})']:
+                    if neighbour != lastMove and neighbour not in blacklist:
+                       options.append(neighbour)
+                       if neighbour not in moveset:
+                        distances.append(mp.distance(neighbour,Point2))
+                       else:
+                        distances.append(999)
+                #STEP2: Select point that brings player closest to point 2, with previous point lowest prioroty
+
+                # print(len(options))
+
+                if len(options) > 0:
+                    nextMove = options[distances.index(min(distances))]
+                else:
+                    blacklist.append(current)
+                    nextMove = lastMove
+
+                moveset.append(nextMove)
+                print(nextMove)
+                lastMove = current
+                current = nextMove
+
+                #STEP3: if stuck in corner and no valid path, select previous path.
 
 
 
+                bg = pygame.image.load("map.png")
+                self.win.fill((0, 0, 0))
+                self.win.blit(bg, (0, 0))
+                pygame.draw.rect(self.win, (255, 0, 0), (moveset[-1][0], moveset[-1][1], self.width, self.width))
+                pygame.display.update()
+                # pygame.time.delay(20)
+            print(len(moveset))
+            directions = []
+            for i in moveset:
+                if moveset.index(i) < len(moveset) - 1:
+                    print(self.getDirection(i, moveset[moveset.index(i) + 1]))
+                    directions.append(self.getDirection(i, moveset[moveset.index(i) + 1]))
+                    # directions.append(self.getDirection(i, moveset[moveset.index(i) + 1]))
+
+            return directions
+
+    def getDirection(self, currentPoint, nextPoint):
+
+         ##up or down
+         if currentPoint[0] == nextPoint[0]:
+             if currentPoint[1] < nextPoint[1]:
+                 return "down"
+             elif currentPoint[1] > nextPoint[1]:
+                 return "up"
+         ##left or right
+
+         elif currentPoint[1] == nextPoint[1]:
+            if currentPoint[0] < nextPoint[0]:
+                return "left"
+            elif currentPoint[0] > nextPoint[0]:
+                return "right"
 
 class hardcoded:
     def __init__(self, allPlayers):

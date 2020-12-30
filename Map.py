@@ -1,3 +1,5 @@
+from datetime import datetime, timedelta
+
 import cv2
 import numpy as np
 
@@ -83,13 +85,14 @@ def lineEqn(point1, point2):
     print(f"y = {m}x + {c}")
 
 def canSee(point1, point2, spacing, solids):
+    currentTime = datetime.now()
     m = ((point1[1] - point2[1])/(point1[0]-point2[0]+0.001))
     b = point1[1]
     a = point1[0]
     visible = True
     lineCoords = []
     for point in solids:
-        print(point)
+        # print(point)
         y = int(m * (point[0] - a) + b)
         if distance([0,y], [0,point[1]]) <= spacing and ((y <= max(point1[1],point2[1])) and (y >= min(point1[1],point2[1]))) and ((point[0] >= min(point1[0],point2[0])) and (point[0] <= max(point1[0],point2[0]))):
             visible = False
