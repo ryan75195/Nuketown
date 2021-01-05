@@ -192,14 +192,13 @@ class graph:
             directions = []
             for i in moveset:
                 if moveset.index(i) < len(moveset) - 1:
-                    print(self.getDirection(i, moveset[moveset.index(i) + 1]))
+                    # print(self.getDirection(i, moveset[moveset.index(i) + 1]))
                     directions.append(self.getDirection(i, moveset[moveset.index(i) + 1]))
-                    # directions.append(self.getDirection(i, moveset[moveset.index(i) + 1]))
-
+                    directions.append(self.getDirection(i, moveset[moveset.index(i) + 1]))
+            print(directions[:5])
             return directions
 
     def getDirection(self, currentPoint, nextPoint):
-
          ##up or down
          if currentPoint[0] == nextPoint[0]:
              if currentPoint[1] < nextPoint[1]:

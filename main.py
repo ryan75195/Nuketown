@@ -107,7 +107,7 @@ def runGame():
         b = Brain.graph("Nuketown-Nodes.txt", win, width, width)
         # b.createGraph("Nuketown-Nodes.txt", win, width, width)
         # b.displayGrid()
-        # allPlayers[currentPlayer].walkTo([240, 400], False, 2, mp.solidObjects(), b)
+        allPlayers[currentPlayer].walkTo([240, 400], False, 2, mp.solidObjects(), b)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
