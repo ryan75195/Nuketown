@@ -1,0 +1,18 @@
+This is long overdue:
+
+Goal is to create an adviserial AI for call of dutie's Nuketown map. the agents have the ability to navigate through the
+map and attempt to kill the opponent. each kill will grant the player one point. the first player to thirty points win.
+
+-Game
+
+
+    -Environment
+    -Score
+    -Game Parameters
+    -Player
+        -Brain
+            -Learning Mechanism
+            -Objectives
+                -Navigate
+                -Kill
+             -Emotions
