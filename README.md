@@ -3,10 +3,10 @@ Python implimentation of the classic black ops map nuketown. This project plans 
 
 Navigation Grid(Nodes) for AI traversal. Network is generated dynamically and ensures the agent avoids collisions with walls & illegal areas.
 
-![tee](https://github.com/ryan75195/Nuketown/blob/master/Nodes.png | 100x100)
+![tee](https://github.com/ryan75195/Nuketown/blob/master/Nodes.png)
 
 
 
 Game UI & Gameplay
 
-![tee](https://github.com/ryan75195/Nuketown/blob/master/Gameplay.png | 100x100)
+![tee](https://github.com/ryan75195/Nuketown/blob/master/Gameplay.png)
