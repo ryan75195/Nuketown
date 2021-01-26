@@ -4,12 +4,11 @@ Python implimentation of the classic black ops map nuketown. This project plans 
 Game UI & Gameplay
 <img align="left" src="https://github.com/ryan75195/Nuketown/blob/master/Gameplay.png">    
 <style type="text/css">
-    .image-left {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      float: right;
-    }
+.image-left {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  float: right; }
 </style>
 
     </style>
@@ -18,10 +17,9 @@ Navigation Grid(Nodes) for AI traversal. Network is generated dynamically and en
 
 <img align="left" src="https://github.com/ryan75195/Nuketown/blob/master/Nodes.png">
 <style type="text/css">
-    .image-left {
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
-      float: right;
-    }
+.image-left {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  float: right; }
 </style>
