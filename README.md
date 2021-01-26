@@ -11,8 +11,6 @@ Game UI & Gameplay
   float: right; }
 </style>
 
-    </style>
-
 Navigation Grid(Nodes) for AI traversal. Network is generated dynamically and ensures the agent avoids collisions with walls & illegal areas.
 
 <img align="left" src="https://github.com/ryan75195/Nuketown/blob/master/Nodes.png">
