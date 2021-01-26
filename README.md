@@ -24,4 +24,4 @@ Game UI & Gameplay
 
 Navigation Grid(Nodes) for AI traversal. Network is generated dynamically and ensures the agent avoids collisions with walls & illegal areas.
 
-![tee](https://github.com/ryan75195/Nuketown/blob/master/Nodes.png){:style="float: right;margin-right: 7px;margin-top: 7px;"}
+![tee](https://github.com/ryan75195/Nuketown/blob/master/Nodes.png|100x100)
